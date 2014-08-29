@@ -1,0 +1,5 @@
+# python
+*.py[cod]
+*.egg
+*.egg-info
+.tox
