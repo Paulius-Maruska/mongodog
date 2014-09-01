@@ -35,7 +35,7 @@ setup(
     version=__version__,
     description=DESCRIPTION,
     long_description=README,
-    url='http://github.com/Paulius-Maruska/mongodog',
+    url='https://github.com/Paulius-Maruska/mongodog',
     license=LICENSE,
     author=__author__,
     author_email='paulius.maruska@gmail.com',
