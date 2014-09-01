@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-MongoDog is a library designed to sniff out the things that your application is doing within
-a mongo database. It plugs itself in between your app and pymongo and logs all of the commands
+MongoDog is a library designed to sniff out the things that your application
+is doing within a mongo database. It plugs itself in between your app and
+pymongo and logs all of the commands
 that your application sends to the server.
 """
 

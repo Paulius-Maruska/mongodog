@@ -5,18 +5,20 @@ import sys
 
 def get_full_traceback(skip=0):
     """Get full traceback.
-    inspired by: http://stackoverflow.com/questions/13210436/get-full-traceback#13210518
+    inspired by: http://stackoverflow.com/questions/13210436/#13210518
 
     :Parameters:
     - `skip`: top frames to be skipped.
 
     :Returns:
-    An object compatible with the pythons built-in traceback object. It isn't the same kind of object,
-    but most traceback formatting functions should accept it.
+    An object compatible with the pythons built-in traceback object. It isn't
+    the same kind of object, but most traceback formatting functions should
+    accept it.
 
     :Note:
-    This function raises a dummy exception in order to make sure the traceback is populated by python. Do not call
-    this function within your own exception handlers, because you will lose your actual traceback information.
+    This function raises a dummy exception in order to make sure the traceback
+    is populated by python. Do not call this function within your own exception
+    handlers, because you will lose your actual traceback information.
     """
     class FakeTracebackFrame(object):
         """Fake traceback frame class"""
@@ -32,11 +34,11 @@ def get_full_traceback(skip=0):
     try:
         raise DummyException()
     except DummyException:
-        _exc_type, _exc_value, exc_traceback = sys.exc_info()
+        _, _, exc_traceback = sys.exc_info()
 
     f = exc_traceback.tb_frame
 
-    for i in range(skip + 1):
+    for _ in range(skip + 1):
         f = f.f_back
 
     head = None
@@ -49,7 +51,8 @@ def get_full_traceback(skip=0):
 
 
 def get_pymongo_cursor_fields(cursor):
-    """Get a dictionary with all (or most) significant field values of the pymongo Cursor object"""
+    """Get a dictionary with all (or most) significant field values of the
+    pymongo Cursor object"""
     fields = ("spec", "fields", "skip", "limit",
               "timeout", "snapshot", "tailable",
               "ordering", "explain", "hint", "batch_size",
@@ -58,4 +61,5 @@ def get_pymongo_cursor_fields(cursor):
               "tag_sets", "secondary_acceptable_latency_ms",
               "must_use_master", "uuid_subtype", "query_flags",
               "kwargs")
-    return {field: cursor.__dict__.get('_Cursor__%s' % field, None) for field in fields}
+    return {field: cursor.__dict__.get('_Cursor__%s' % field, None)
+            for field in fields}
