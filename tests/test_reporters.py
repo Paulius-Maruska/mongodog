@@ -1,17 +1,24 @@
 # -*- coding: utf-8 -*-
 """Unit tests for mongodog reporters"""
-import logging
 try:
     # python2
     import StringIO as io
 except ImportError:
     # python3
     import io
-
+import logging
 import unittest
+
+try:
+    # if pymongo available
+    import pymongo
+    PYMONGO_AVAILABLE = True
+except ImportError:
+    PYMONGO_AVAILABLE = False
 
 import mongodog.reporters
 import mongodog.utils
+from mongoboxed import BaseMongoBoxedTestCase
 
 
 class TestBaseReporter(unittest.TestCase):
@@ -96,3 +103,38 @@ class TestLoggingReporter(unittest.TestCase):
         content = lbuf.getvalue()
 
         self.assertTrue(content.find("dummy_traceback_marker") != -1)
+
+
+class TestMongoReporter(BaseMongoBoxedTestCase):
+    """Unit tests for MongoReporter class"""
+
+    def setUp(self):
+        # init mongo client
+        self.client = self.mongobox.client()
+
+    def tearDown(self):
+        # drop all collections
+        for collection in self.client.mongodog_test.collection_names():
+            if collection not in ('system.indexes',):
+                self.client.mongodog_test[collection].drop()
+
+    def test_commands_are_inserted_into_configured_collection(self):
+        """MongoReporter inserts commands into the configured collection"""
+        db = self.client.mongodog_test
+        reporter = mongodog.reporters.MongoReporter(db.mongodog_reports)
+        reporter.report_mongo_command({"db": "mongodog_test", "collection": "foo", "op": "unknown"})
+
+        self.assertEqual(1, len(list(db.mongodog_reports.find())))
+
+    def test_reported_commands_include_traceback(self):
+        """MongoReporter does not report own commands (inserts)"""
+        db = self.client.mongodog_test
+        reporter = mongodog.reporters.MongoReporter(db.mongodog_reports)
+        cmd = {"db": "mongodog_test", "collection": "foo", "op": "unknown"}
+        tb = mongodog.utils.get_full_traceback()
+        reporter.report_mongo_command(cmd, tb)
+
+        doc = db.mongodog_reports.find_one()
+        self.assertIn("_traceback", doc)
+        self.assertIsInstance(doc['_traceback'], list)
+        self.assertLess(0, len(doc['_traceback']))

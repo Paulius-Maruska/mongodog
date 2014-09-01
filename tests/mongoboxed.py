@@ -7,7 +7,7 @@ import unittest
 import mongobox
 
 
-class BaseIntegrationTestCase(unittest.TestCase):
+class BaseMongoBoxedTestCase(unittest.TestCase):
     """Base class for all integration tests - auto-starts mongobox"""
 
     @classmethod

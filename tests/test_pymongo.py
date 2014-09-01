@@ -3,13 +3,12 @@
 Integration with pymongo tests
 """
 import bson
-import mongobox
 
 import mongodog
-from integration import BaseIntegrationTestCase
+from mongoboxed import BaseMongoBoxedTestCase
 
 
-class TestMongoDogWithPyMongo(BaseIntegrationTestCase):
+class TestMongoDogWithPyMongo(BaseMongoBoxedTestCase):
     """Integration tests for mongodog and pymongo"""
 
     def setUp(self):

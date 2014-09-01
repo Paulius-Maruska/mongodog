@@ -4,6 +4,7 @@ Defines mongodog reporters.
 """
 import json
 import logging
+import traceback as python_traceback
 
 
 class BaseReporter(object):
@@ -55,3 +56,40 @@ class LoggingReporter(BaseReporter):
         command_json = json.dumps(command)
         log_message = "mongodog: %s" % command_json
         self.logger.info(log_message, exc_info=exc_info)
+
+
+class MongoReporter(BaseReporter):
+    """Reports the calls into the configured mongo collection (does not report it's own calls)"""
+
+    def __init__(self, mongo_collection):
+
+        self.collection = mongo_collection
+
+    def report_mongo_command(self, command, traceback=None):
+        """Logs the command to configured mongo collection"""
+        # ignore all commands, that involve the collection we are configured to insert into
+        if command.get('collection', None) == self.collection.name:
+            return
+
+        types = bool, int, float
+        try:
+            types = types + (long, basestring)
+        except NameError:
+            # must be python3
+            types = types + (str, bytes)
+
+        document = {}
+        for key, val in command.items():
+            if isinstance(val, types):
+                document[key] = val
+            else:
+                try:
+                    document[key] = json.dumps(val)
+                except TypeError:
+                    # json raises TypeError, when trying to serialize something that it does not support
+                    document[key] = repr(val)
+                    # ir repr fails - we give up and let the app crash
+
+        document['_traceback'] = python_traceback.format_tb(traceback)  # list of strings
+
+        self.collection.insert(document)
