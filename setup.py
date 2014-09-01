@@ -44,7 +44,7 @@ setup(
     install_requires=[],
     zip_safe=False,
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Plugins',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
