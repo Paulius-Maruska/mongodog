@@ -184,7 +184,7 @@ class Sniffer(object):
         self.report_command(cmd)
 
     def callback_before_collection_aggregate(self, custom, collection,
-                                             pipeline):
+                                             pipeline, **kwargs):
         """Callback used with pymongo collection aggregate call"""
         command = {
             'db': collection.database.name,
@@ -192,6 +192,7 @@ class Sniffer(object):
             'op': custom['f'],
             'pipeline': pipeline,
         }
+        command.update(kwargs)
         self.report_command(command)
 
     def callback_before_collection_count(self, custom, collection):
